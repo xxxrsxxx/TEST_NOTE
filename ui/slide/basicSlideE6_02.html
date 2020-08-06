@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Title</title>
+		<!--<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>-->
+	</head>
+	<body>
+		<!--
+		// <div class='container'>
+		// 	<div class='slide_container'>
+		// 		<div class='slide_wrapper'>
+		// 			<div class='slide_list'>slide1</div>
+		// 			<div class='slide_list'>slide2</div>
+		// 			<div class='slide_list'>slide3</div>
+		// 			<div class='slide_list'>slide4</div>
+		// 		</div>
+		//		<div class="slide_controller">
+		//			<div class="slide_btn slide_prev">prevBtn</div>
+		//			<div class="slide_btn slide_next">nextBtn</div>
+		//		</div>
+		// 	</div>
+		// </div>
+		-->
+		<div class="container">
+			<section>
+				<div class="slide_container"></div>
+			</section>
+			<section>
+				<div class="slide_container two"></div>
+			</section>
+		</div>
+		<script type="text/javascript">
+			/**
+			 * @dsc make it only with es6
+			 * @param init(arg) - payload config
+			 **/
+			function slide() {
+				let initial = {
+					anchor: {
+						container: null,
+						wrapper: null,
+						slides: null,
+						prevBtn: null,
+						nextBtn: null,
+					},
+					state: {
+						idx: 0,
+						view: 3,
+						between: 30,
+						easing: 'ease-in-out',
+						duration: 400,
+						autoPlay: false,
+						eventStop: false,
+						loop: false,
+					},
+					eventListener: ['click'],
+					initialData: [],
+				};
+				const init = arg => {
+					//initial = { ...initial, ...arg };
+					initial.anchor = { ...arg.anchor };
+					initial.initialData = [...arg.initialData];
+					initial.state = { ...initial.state, ...arg.state };
+					setSlide();
+					addEvent();
+				};
+				/**
+				 * setting slide elements
+				 * @param { String } Duplicate string value
+				 **/
+				const setSlide = duplicate => {
+					const { anchor, state, initialData, option } = initial;
+					const calculateSpace = getSpace();
+					let string = '';
+					if (!duplicate) {
+						anchor.container.innerHTML = ` <div class="slide_wrapper"></div> <div class="slide_controller"> <div class="slide_btn slide_prev">prevBtn</div> <div class="slide_btn slide_next">nextBtn</div> </div>`;
+						initialData.forEach(e => {
+							string += `<div class="slide_list" data-id="${e._id}" style="width:${calculateSpace.itemWidth}px;margin-right:${state.between}px">${e.dsc}</div>`;
+						});
+					}
+					if (duplicate) string = duplicate;
+
+					anchor.container.querySelector('.slide_wrapper').innerHTML = string;
+
+					return (function () {
+						Object.assign(anchor, {
+							wrapper: anchor.container.querySelector('.slide_wrapper'),
+							slides: anchor.container.querySelectorAll('.slide_list'),
+							prevBtn: anchor.container.querySelector('.slide_prev'),
+							nextBtn: anchor.container.querySelector('.slide_next'),
+						});
+					})();
+				};
+				/**
+				 * reset slide Space
+				 **/
+				const getSpace = () => {
+					const { anchor, state } = initial;
+					let containerWindth, itemWidth, sumBetween;
+					containerWindth = anchor.container.clientWidth;
+					sumBetween = (state.view - 1) * state.between;
+					itemWidth = (containerWindth - sumBetween) / state.view;
+					return {
+						containerWindth,
+						itemWidth,
+					};
+				};
+				/**
+				 * add Event Listener
+				 **/
+				const addEvent = () => {
+					const { anchor, eventListener } = initial;
+					eventListener.forEach(e => {
+						anchor.prevBtn.addEventListener(e, event => {
+							switchController(event, 'prev');
+						});
+						anchor.nextBtn.addEventListener(e, event => {
+							switchController(event, 'next');
+						});
+					});
+				};
+				/**
+				 * event switch
+				 * @param {event} addEventListener
+				 * @param {String} type 동작 구분
+				 **/
+				const switchController = (event, type) => {
+					const { anchor, state } = initial;
+
+					const space = getSpace();
+					let limit = anchor.slides.length - state.view,
+						measure = space.itemWidth + state.between;
+
+					if (state.eventStop) return;
+					switch (type) {
+						case 'prev':
+							if (state.loop) {
+								setAlign(measure, 'prev');
+								reProccessData(-1);
+							} else {
+								if (state.idx > 0) {
+									state.idx--;
+									setAlign(-measure * state.idx, 'prev');
+								}
+							}
+							break;
+						case 'next':
+							if (state.loop) {
+								setAlign(-measure, 'prev');
+								reProccessData(0);
+							} else {
+								if (state.idx < limit) {
+									state.idx++;
+									setAlign(-measure * state.idx, 'next');
+								}
+							}
+
+							break;
+					}
+				};
+				/**
+				 * @param {number} splice starting point
+				 **/
+				const reProccessData = start => {
+					const { anchor, state } = initial;
+					let string = '',
+						_array = [];
+
+					anchor.slides.forEach(e => {
+						_array.push(e);
+					});
+
+					let fragment = _array.splice(start, 1);
+
+					start === -1
+						? (_array = fragment.concat(_array))
+						: (_array = _array.concat(fragment));
+
+					_array.forEach(e => {
+						string += e.outerHTML;
+					});
+
+					setSlide(string);
+				};
+				/**
+				 * slide align
+				 * @param {number} point 이동거리
+				 * @param {string} event type
+				 **/
+				const setAlign = (point, type) => {
+					const { anchor, state } = initial;
+					const option = {
+						easing: state.easing,
+						duration: state.duration,
+					};
+					state.eventStop = true;
+
+					Object.assign(anchor.wrapper.style, {
+						transition: `transform ${option.duration}ms ${option.easing}`,
+						transform: `translate(${point}px,0)`,
+					});
+					if (!state.loop) {
+						state.eventStop = false;
+						return;
+					}
+					setTimeout(() => {
+						Object.assign(anchor.wrapper.style, {
+							transition: `transform 0ms`,
+							transform: `translate(0,0)`,
+						});
+						state.eventStop = false;
+					}, option.duration);
+				};
+
+				return {
+					init,
+				};
+			}
+			window.onload = function () {
+				const slideFnc = slide();
+				const slideFnc2 = slide();
+				const config = {
+					anchor: {
+						container: document.querySelector('.slide_container'),
+					},
+					initialData: [
+						{ _id: 1, dsc: 'slide1', img: null },
+						{ _id: 2, dsc: 'slide2', img: null },
+						{ _id: 3, dsc: 'slide3', img: null },
+						{ _id: 4, dsc: 'slide4', img: null },
+						{ _id: 5, dsc: 'slide5', img: null },
+						{ _id: 6, dsc: 'slide6', img: null },
+					],
+				};
+				const config2 = {
+					anchor: {
+						container: document.querySelector('.two'),
+					},
+					state: {
+						loop: true,
+					},
+					initialData: [
+						{ _id: 1, dsc: 'slide1', img: null },
+						{ _id: 2, dsc: 'slide2', img: null },
+						{ _id: 3, dsc: 'slide3', img: null },
+						{ _id: 4, dsc: 'slide4', img: null },
+						{ _id: 5, dsc: 'slide5', img: null },
+						{ _id: 6, dsc: 'slide6', img: null },
+					],
+				};
+				slideFnc.init(config);
+				slideFnc2.init(config2);
+			};
+		</script>
+		<style type="text/css">
+			* {
+				padding: 0;
+				margin: 0;
+				text-decoration: none;
+				list-style: none;
+				appearance: none;
+				-webkit-appearance: none;
+				box-sizing: border-box;
+				-webkit-box-sizing: border-box;
+			}
+			body {
+				font-size: 14px;
+				font-family: 'Noto Sans KR', sans-serif !important;
+			}
+
+			img {
+				width: 100%;
+				vertical-align: top;
+			}
+			button {
+				border: none;
+			}
+			.container {
+				display: flex;
+				flex-direction: column;
+				height: 100vh;
+				justify-content: center;
+				align-items: center;
+			}
+			section {
+				display: flex;
+				align-items: center;
+				flex: 1;
+			}
+			.slide_container {
+				position: relative;
+				width: 960px;
+				margin: 0 auto;
+				overflow: hidden;
+				background: #ccc;
+				z-index: 1;
+			}
+			.slide_container .slide_wrapper {
+				position: relative;
+				display: flex;
+				width: 100%;
+				z-index: 1;
+			}
+			.slide_list {
+				display: flex;
+				flex-shrink: 0;
+				justify-content: center;
+				align-items: center;
+				height: 300px;
+				outline: 1px solid #000;
+			}
+			.slide_controller {
+				display: flex;
+				justify-content: space-between;
+				height: 50px;
+			}
+			.slide_controller .slide_btn {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+		</style>
+	</body>
+</html>
