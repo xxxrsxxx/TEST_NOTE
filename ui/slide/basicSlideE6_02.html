@@ -7,21 +7,21 @@
 	</head>
 	<body>
 		<!--
-		// <div class='container'>
-		// 	<div class='slide_container'>
-		// 		<div class='slide_wrapper'>
-		// 			<div class='slide_list'>slide1</div>
-		// 			<div class='slide_list'>slide2</div>
-		// 			<div class='slide_list'>slide3</div>
-		// 			<div class='slide_list'>slide4</div>
-		// 		</div>
-		//		<div class="slide_controller">
-		//			<div class="slide_btn slide_prev">prevBtn</div>
-		//			<div class="slide_btn slide_next">nextBtn</div>
-		//		</div>
-		// 	</div>
-		// </div>
-		-->
+// <div class='container'>
+// 	<div class='slide_container'>
+// 		<div class='slide_wrapper'>
+// 			<div class='slide_list'>slide1</div>
+// 			<div class='slide_list'>slide2</div>
+// 			<div class='slide_list'>slide3</div>
+// 			<div class='slide_list'>slide4</div>
+// 		</div>
+//		<div class="slide_controller">
+//			<div class="slide_btn slide_prev">prevBtn</div>
+//			<div class="slide_btn slide_next">nextBtn</div>
+//		</div>
+// 	</div>
+// </div>
+-->
 		<div class="container">
 			<section>
 				<div class="slide_container"></div>
@@ -165,10 +165,10 @@
 					const { state, initialData } = initial;
 					if (!state.loop) return;
 
-					let _array = [],
-						result = [],
-						prevFragment = null,
-						nextFragment = null;
+					let _array,
+						prevFragment,
+						nextFragment,
+						result = [];
 
 					_array = initialData;
 
