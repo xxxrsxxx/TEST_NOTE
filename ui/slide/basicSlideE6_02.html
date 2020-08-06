@@ -56,32 +56,32 @@
 						loop: false,
 					},
 					eventListener: ['click'],
-					initialData: [],
+					itemData: [],
 				};
 				const init = arg => {
 					//initial = { ...initial, ...arg };
 					initial.anchor = { ...arg.anchor };
-					initial.initialData = [...arg.initialData];
+					initial.itemData = [...arg.itemData];
 					initial.state = { ...initial.state, ...arg.state };
 					setSlide();
 					addEvent();
-					reProccessData();
+					if (initial.state.loop) reProcessData('init');
 				};
 				/**
 				 * setting slide elements
 				 * @param { boolean } Duplicate
 				 **/
 				const setSlide = duplicate => {
-					let { anchor, state, initialData, option } = initial;
+					let { anchor, state, itemData, option } = initial;
 					const calculateSpace = getSpace();
 					let string = '';
 					if (!duplicate) {
 						anchor.container.innerHTML = ` <div class="slide_wrapper"></div> <div class="slide_controller"> <div class="slide_btn slide_prev">prevBtn</div> <div class="slide_btn slide_next">nextBtn</div> </div>`;
 					}
-					if (duplicate) initialData = duplicate;
+					if (duplicate) itemData = duplicate;
 
-					initialData.forEach((e, i) => {
-						if ((duplicate && i < state.view) || i >= initialData.length - state.view) {
+					itemData.forEach((e, i) => {
+						if ((duplicate && i < state.view) || i >= itemData.length - state.view) {
 							string += `<div class="slide_list slide_duplicate" data-index="${e._id}" style="width:${calculateSpace.itemWidth}px;margin-right:${state.between}px"><img src="${e.img}" alt="${e.dsc}"></div>`;
 						} else {
 							string += `<div class="slide_list" data-index="${e._id}" style="width:${calculateSpace.itemWidth}px;margin-right:${state.between}px"><img src="${e.img}" alt="${e.dsc}"></div>`;
@@ -97,7 +97,7 @@
 							prevBtn: anchor.container.querySelector('.slide_prev'),
 							nextBtn: anchor.container.querySelector('.slide_next'),
 						});
-						if (duplicate) initial.initialData = duplicate;
+						if (duplicate) initial.itemData = duplicate;
 					})();
 				};
 				/**
@@ -105,13 +105,15 @@
 				 **/
 				const getSpace = () => {
 					const { anchor, state } = initial;
-					let containerWindth, itemWidth, sumBetween;
-					containerWindth = anchor.container.clientWidth;
+					let containerWidth, itemWidth, sumBetween, loopContainerWidth;
+					containerWidth = anchor.container.clientWidth;
+					loopContainerWidth = containerWidth + state.between;
 					sumBetween = (state.view - 1) * state.between;
-					itemWidth = (containerWindth - sumBetween) / state.view;
+					itemWidth = (containerWidth - sumBetween) / state.view;
 					return {
-						containerWindth,
+						containerWidth,
 						itemWidth,
+						loopContainerWidth,
 					};
 				};
 				/**
@@ -135,34 +137,38 @@
 				 **/
 				const switchController = (event, type) => {
 					const { anchor, state } = initial;
-
 					const space = getSpace();
-					let limit = anchor.slides.length - state.view,
+					let limit = !state.loop
+							? anchor.slides.length - state.view
+							: anchor.slides.length - state.view * 2,
 						measure = space.itemWidth + state.between;
+					let num = 0;
 
+					// working...
 					if (state.eventStop) return;
+					if (state.loop) num = 990;
 					switch (type) {
 						case 'prev':
 							if (state.idx > 0) {
 								state.idx--;
-								//reProccessData('prev');
-								setAlign(-measure * state.idx, 'prev');
+								//reProcessData('prev');
+								setAlign(-num - measure * state.idx, 'prev');
 							}
 							break;
 						case 'next':
 							if (state.idx < limit) {
 								state.idx++;
-								//reProccessData('next');
-								setAlign(-measure * state.idx, 'next');
+								console.log(num, measure * state.idx);
+								setAlign(-num - measure * state.idx, 'next');
 							}
 							break;
 					}
 				};
 				/**
-				 * @param {string} type click event
+				 * @param {string} type eventType
 				 **/
-				const reProccessData = type => {
-					const { state, initialData } = initial;
+				const reProcessData = type => {
+					const { anchor, state, itemData } = initial;
 					if (!state.loop) return;
 
 					let _array,
@@ -170,22 +176,28 @@
 						nextFragment,
 						result = [];
 
-					_array = initialData;
+					_array = itemData;
 
-					console.log('시작', initialData);
+					console.log('시작', itemData);
 					prevFragment = _array.slice(_array.length - state.view, _array.length);
 					nextFragment = _array.slice(0, state.view);
 
-					result = result.concat(prevFragment, initialData, nextFragment);
+					result = result.concat(prevFragment, itemData, nextFragment);
 
 					console.log(
 						'duplicate validation initialData',
-						initialData,
+						itemData,
 						'\nresult',
 						result,
 						'\n_array',
 						_array,
 					);
+
+					let space = getSpace();
+					if (type == 'init')
+						Object.assign(anchor.wrapper.style, {
+							transform: `translate(-${space.loopContainerWidth}px,0)`,
+						});
 					setSlide(result);
 				};
 				/**
@@ -201,20 +213,21 @@
 					};
 					state.eventStop = true;
 					Object.assign(anchor.wrapper.style, {
-						transition: `transform ${option.duration}ms ${option.easing} .1s`,
+						transition: `transform ${option.duration}ms ${option.easing} `,
 						transform: `translate(${point}px,0)`,
 					});
 					if (!state.loop) {
 						state.eventStop = false;
 						return;
 					}
-					setTimeout(() => {
-						Object.assign(anchor.wrapper.style, {
-							transition: `transform 0ms`,
-							transform: `translate(0,0)`,
-						});
-						state.eventStop = false;
-					}, option.duration);
+					// setTimeout(() => {
+					// 	Object.assign(anchor.wrapper.style, {
+					// 		transition: `transform 0ms`,
+					// 		transform: `translate(0,0)`,
+					// 	});
+					// 	state.eventStop = false;
+					// }, option.duration);
+					state.eventStop = false;
 				};
 
 				return {
@@ -228,7 +241,7 @@
 					anchor: {
 						container: document.querySelector('.slide_container'),
 					},
-					initialData: [
+					itemData: [
 						{ _id: 1, dsc: 'slide1', img: null },
 						{ _id: 2, dsc: 'slide2', img: null },
 						{ _id: 3, dsc: 'slide3', img: null },
@@ -244,7 +257,7 @@
 					state: {
 						loop: true,
 					},
-					initialData: [
+					itemData: [
 						{
 							_id: 1,
 							dsc: 'slide1',
