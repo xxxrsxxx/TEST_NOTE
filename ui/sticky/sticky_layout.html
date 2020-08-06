@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>mobile css position sticky</title>
+
+		<style type="text/css">
+			* {
+				padding: 0;
+				margin: 0;
+			}
+			html,
+			body {
+				background: #141414;
+			}
+			.wrapper {
+				width: 100vw;
+				height: 100vh;
+			}
+			nav {
+				display: flex;
+				align-items: center;
+				position: fixed;
+				top: 0;
+				width: 100%;
+				height: 50px;
+				box-sizing: border-box;
+				padding: 0 1rem;
+				background-color: transparent;
+				transition: background-color 0.4s;
+				z-index: 10;
+			}
+			.scroll_down nav {
+				background: rgb(20, 20, 20);
+				color: #fff;
+			}
+			.container {
+				height: 100vh;
+			}
+			.top_area {
+				height: 400px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				position: sticky;
+				position: -webkit-sticky;
+				top: 0;
+				background: #fff;
+				color: #141414;
+			}
+			.contents {
+				height: 2000px;
+				display: flex;
+				flex-direction: column;
+				position: relative;
+				top: 0;
+				background: #141414;
+			}
+			.contents > .block {
+				display: flex;
+				flex: 1;
+				justify-content: center;
+				align-items: center;
+				color: #fff;
+			}
+		</style>
+	</head>
+	<body>
+		<section class="wrapper">
+			<nav>
+				<div>nav</div>
+			</nav>
+			<div class="container">
+				<div class="top_area">
+					<div>banner</div>
+				</div>
+				<div class="contents">
+					<div class="block">1</div>
+					<div class="block">2</div>
+					<div class="block">3</div>
+					<div class="block">4</div>
+				</div>
+			</div>
+		</section>
+		<script type="text/javascript">
+			function initialLayout() {
+				const initial_values = {
+					anchor: document.querySelector('body'),
+				};
+				function scrollEvent() {
+					const { anchor } = initial_values;
+					window.addEventListener('scroll', function (e) {
+						anchor.classList.toggle('scroll_down', window.scrollY > 0);
+					});
+				}
+				return (function () {
+					scrollEvent();
+				})();
+			}
+			window.onload = function () {
+				const main = initialLayout();
+			};
+		</script>
+	</body>
+</html>
