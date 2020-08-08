@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="xxxx">
 	<head>
 		<meta charset="UTF-8" />
 		<title>mobile css position sticky</title>
@@ -53,14 +53,15 @@
 				display: flex;
 				flex-direction: column;
 				position: relative;
+				background: #353535;
 				top: 0;
-				background: #141414;
 			}
 			.contents > .block {
 				display: flex;
 				flex: 1;
 				justify-content: center;
 				align-items: center;
+				background: #353535;
 				color: #fff;
 			}
 		</style>
@@ -84,17 +85,54 @@
 		</section>
 		<script type="text/javascript">
 			function initialLayout() {
-				const initial_values = {
-					anchor: document.querySelector('body'),
+				const config = {
+					anchor: {
+						html: document.querySelector('html'),
+						body: document.querySelector('body'),
+					},
+					screen: {
+						typeArray: [],
+					},
 				};
-				function scrollEvent() {
-					const { anchor } = initial_values;
+				/**
+				 * @dsc 반응형 대응 스크린 타입 셋업 함수
+				 **/
+				const setScreenType = () => {
+					const { anchor, screen } = config;
+					const w = window.innerWidth,
+						screenType = w < 768 ? 1 : w < 960 ? 2 : 3,
+						string = `screenType${screenType}`;
+					// anchor classList 일치 하지 않을 경우
+					if (!anchor.html.classList.contains(string)) {
+						screen.typeArray.push(string);
+						screen.typeArray.forEach(e => {
+							anchor.html.classList.remove(e);
+						});
+					}
+					anchor.html.classList.add(string);
+				};
+				/**
+				 * @dsc window scroll event check
+				 **/
+				const scrollEvent = () => {
+					const { anchor } = config;
 					window.addEventListener('scroll', function (e) {
-						anchor.classList.toggle('scroll_down', window.scrollY > 0);
+						anchor.body.classList.toggle('scroll_down', window.scrollY > 0);
 					});
-				}
+				};
+				/**
+				 * @dsc window resize event check
+				 **/
+				const resizeDom = () => {
+					window.addEventListener('resize', () => {
+						setScreenType();
+					});
+				};
+
 				return (function () {
 					scrollEvent();
+					setScreenType();
+					resizeDom();
 				})();
 			}
 			window.onload = function () {
