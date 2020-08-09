@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>async_await</title>
+		<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+	</head>
+	<body>
+		<h1>비동기 참조</h1>
+		<script type="text/javascript">
+			/**
+			 * ECMA 표준에서 초기 정의. not ie support
+			 **/
+			function promise() {
+				return new Promise((resolve, reject) => {
+					console.log('Promise', resolve, reject);
+					resolve('resolve');
+					reject('reject');
+				});
+			}
+			const newPromise = promise();
+			console.log('newPromise', newPromise);
+			newPromise.then(res => {
+				console.log('newPromiseRes', res);
+			});
+			console.clear();
+			/**
+			 * @dsc async await Practice
+			 **/
+			function delay(ms) {
+				return new Promise((resolve, reject) => {
+					setTimeout(resolve, ms);
+				});
+			}
+			async function promise_1() {
+				const promise = await delay(1000);
+				return `promise_1`;
+			}
+			async function promise_2() {
+				const promise = await delay(1000);
+				return `promise_2`;
+			}
+			function originChaining() {
+				// 벙렬 구조가 아닌 호출
+				return promise_1().then(res => {
+					console.log('promise1_delay 1000');
+					return promise_2().then(res2 => {
+						console.log('promise2_delay 1000');
+						return `res:${res},res2:${res2},totalDelay 2000ms`;
+					});
+				});
+			}
+			originChaining().then(res => console.log('origin_call', res));
+			/**
+			 * @dsc originChaining async, await code style
+			 **/
+			async function asyncChaining() {
+				const await1 = await promise_1(1000);
+				const await2 = await promise_2(1000);
+				return `res:${await1},res2:${await2},totalDelay 2000ms`;
+			}
+
+			asyncChaining().then(res => {
+				console.log('asyncChaining', res);
+			});
+			/**
+			 * @dsc origin chaining parallel structure code (병렬 구조)
+			 **/
+			async function asyncChaining2() {
+				const promisePromise = promise_1(1000);
+				const promise2Promise = promise_2(1000);
+				const result1 = await promisePromise;
+				const result2 = await promise2Promise;
+				return `res:${result1},res2:${result2},totalDelay 1000ms`;
+			}
+			asyncChaining2().then(res => {
+				console.log('asyncChaining2', res);
+			});
+		</script>
+	</body>
+</html>
