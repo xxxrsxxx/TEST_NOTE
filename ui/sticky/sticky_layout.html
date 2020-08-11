@@ -84,7 +84,7 @@
 			</div>
 		</section>
 		<script type="text/javascript">
-			function initialLayout() {
+			function initialLayout(qualifiedName, value) {
 				const config = {
 					anchor: {
 						html: document.querySelector('html'),
@@ -103,13 +103,15 @@
 						screenType = w < 768 ? 1 : w < 960 ? 2 : 3,
 						string = `screenType${screenType}`;
 					// anchor classList 일치 하지 않을 경우
-					if (!anchor.html.classList.contains(string)) { //array method includes 같은 원
+					if (!anchor.html.classList.contains(string)) {
+						//array method includes 같은 원리
 						screen.typeArray.push(string);
-						screen.typeArray.forEach(e => {리
+						screen.typeArray.forEach(e => {
 							anchor.html.classList.remove(e);
 						});
 					}
 					anchor.html.classList.add(string);
+					anchor.html.setAttribute('screenType', `${screenType}`);
 				};
 				/**
 				 * @dsc window scroll event check
