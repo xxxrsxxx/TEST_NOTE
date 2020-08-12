@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Title</title>
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<!--form binding https://kr.vuejs.org/v2/guide/forms.html-->
+	</head>
+	<body>
+		<div id="app">
+			<div
+				style="height: 100vh; display: flex; justify-content: center; align-items: center;"
+			>
+				<div>
+					<input
+						v-model="option.checked"
+						value="xr1"
+						@change="checkHandler"
+						type="checkbox"
+						name="xr1"
+						id="xr1"
+					/>
+					<label for="xr1">xr1</label>
+					<input
+						v-model="option.checked"
+						value="xr2"
+						@change="checkHandler"
+						type="checkbox"
+						name="xr2"
+						id="xr2"
+					/>
+					<label for="xr2">xr2</label>
+					<p>{{option.checked}}</p>
+				</div>
+				<div>
+					<select v-model="option.selected" @change="optionHandler" name="x3" id="x3">
+						<option :value="{num:1}">1</option>
+						<option :value="{num:2}">2</option>
+						<option value="3">3</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var app = new Vue({
+				el: '#app',
+				data: {
+					initial: {
+						message: 'start',
+					},
+					option: {
+						checked: [],
+						selected: '',
+					},
+				},
+				created() {},
+				methods: {
+					init() {
+						console.log('methods init');
+					},
+					checkHandler({ target }) {
+						const { option } = this;
+						console.log(
+							'checkHandler',
+							option.checked,
+							option.checked.indexOf(target.value),
+						);
+					},
+					optionHandler({ target }) {
+						const { option } = this;
+						console.log('optionHandler', target, option.selected);
+					},
+				},
+				mounted() {
+					const { init } = this;
+					init();
+				},
+			});
+		</script>
+		<style type="text/css">
+			* {
+				padding: 0;
+				margin: 0;
+				text-decoration: none;
+				list-style: none;
+				box-sizing: border-box;
+				-webkit-box-sizing: border-box;
+			}
+			body {
+				font-size: 14px;
+				font-family: 'Noto Sans KR', sans-serif !important;
+			}
+
+			img {
+				width: 100%;
+				vertical-align: top;
+			}
+			button {
+				border: none;
+			}
+			#app {
+				width: 100%;
+				min-height: 100vh;
+			}
+		</style>
+	</body>
+</html>
