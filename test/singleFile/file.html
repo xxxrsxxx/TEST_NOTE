@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Title</title>
+	</head>
+	<body>
+		<input type="file" id="input" accept="video/*" />
+		<video src=""></video>
+		<canvas></canvas>
+		<button>이미지 다시 추출</button>
+
+		<div id="images"></div>
+		<script>
+			const inputEl = document.getElementById('input');
+			const imageWrap = document.getElementById('images');
+
+			function hangelFiles() {
+				const file = this.files[0];
+				const fileReader = new FileReader();
+				document.createElement('video');
+				document.createElement('canvas');
+				const video = document.querySelector('video');
+				const canvas = document.querySelector('canvas');
+				let count = 0;
+
+				const capture = (fileReader.onload = function () {
+					const blob = new Blob([fileReader.result], { type: file.type });
+					const url = URL.createObjectURL(blob);
+					const snapImage = function () {
+						const image = new Image();
+
+						canvas.width = video.videoWidth;
+						canvas.height = video.videoHeight;
+						canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+						image.src = canvas.toDataURL();
+						imageWrap.appendChild(image);
+						//URL.revokeObjectURL(url);
+					};
+
+					const timeupdate = async function () {
+						if (count < 3) {
+							count++;
+							await snapImage();
+							video.removeEventListener('timeupdate', timeupdate);
+							video.pause();
+							return capture();
+						} else {
+							video.removeEventListener('timeupdate', timeupdate);
+							video.pause();
+						}
+					};
+
+					video.onloadedmetadata = function () {
+						video.currentTime = Math.floor(Math.random() * video.duration);
+						video.addEventListener('timeupdate', timeupdate);
+					};
+
+					video.preload = 'metadata';
+					video.src = url;
+					// Load video in Safari / IE11
+					video.muted = true;
+					video.playsInline = true;
+					video.play();
+				});
+				fileReader.readAsArrayBuffer(file);
+			}
+
+			inputEl.addEventListener('change', hangelFiles, false);
+
+			/*
+    파일을 새로 선택할 때 이전 이미지가 없어지도록
+    */
+		</script>
+		<style>
+			#images img {
+				margin: 10px;
+				width: 360px;
+			}
+		</style>
+	</body>
+</html>

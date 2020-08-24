@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Title</title>
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css"
+		/>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+	</head>
+	<body>
+		<div id="app">
+			<app
+				:stored-id="storedId"
+				:stored-data="storedData"
+				@update-id="updateId"
+				@update-list="updateList"
+			>
+			</app>
+		</div>
+		<script type="text/javascript">
+			const STORED_LIST = 'vue-todo-list-fCb8AKPOwQ';
+			const STORED_ID = 'vue-todo-id-ZkPjMLQCI8';
+
+			let storedTodoList = JSON.parse(window.localStorage.getItem(STORED_LIST));
+			let storedId = window.localStorage.getItem(STORED_ID);
+
+			let startArray = [
+				{
+					text: 'Add Todo Items with the + Button',
+					color: 'ice',
+					checked: false,
+					starred: false,
+					id: 1,
+				},
+				{
+					text: 'Star Items for Priority',
+					color: 'jewel',
+					checked: true,
+					starred: true,
+					id: 2,
+				},
+				{
+					text: 'Filter Items by Color or Star',
+					color: 'tang',
+					checked: false,
+					starred: true,
+					id: 3,
+				},
+				{
+					text: 'All Saved in Local Browser Storage',
+					color: 'ice',
+					checked: true,
+					starred: false,
+					id: 4,
+				},
+			];
+
+			let app = {
+				props: ['stored-id', 'stored-data'],
+				template: `  
+      <div>
+        <tab-bar @filter="onFilter" :colors="colors"></tab-bar>
+        <ul>
+          <item v-for="item in todoList.filter((x) => filter === 'all' ? x : filter === 'starred' ? x.starred : filter === x.color)"
+                :key="item.id" :data="item" :colors="colors" :filter="filter"
+                @check="onCheck(item.id)" @color-change="onColorChange(item.id)" @new-color="onNewColor"
+                @star-change="onStarChange(item.id)" @remove="onRemove(item.id)"></item>
+        </ul>
+        <add-form @add-item="addItem"></add-form>
+      </div>`,
+				data: function () {
+					return {
+						colors: ['all', 'ice', 'tang', 'jewel', 'rose'],
+						newId: this.storedId || 5,
+						todoList: this.storedData || startArray,
+						filter: 'all',
+						recentColor: 'ice',
+					};
+				},
+				watch: {
+					todoList: {
+						handler: function () {
+							this.$emit('update-list', this.todoList);
+						},
+						deep: true,
+					},
+				},
+				methods: {
+					onFilter: function (filter) {
+						this.filter = filter;
+						if (filter !== 'all' && filter !== 'starred') {
+							this.recentColor = filter;
+						}
+					},
+					onCheck: function (id) {
+						let el = this.todoList.find(x => x.id === id);
+						el.checked = !el.checked;
+					},
+					onColorChange: function (id) {
+						let el = this.todoList.find(x => x.id === id);
+						el.color = this.recentColor;
+					},
+					onNewColor: function (color) {
+						this.recentColor = color;
+					},
+					onStarChange: function (id) {
+						let el = this.todoList.find(x => x.id === id);
+						el.starred = !el.starred;
+					},
+					onRemove: function (id) {
+						let el = this.todoList.find(x => x.id === id);
+						let idx = this.todoList.indexOf(el);
+						this.todoList.splice(idx, 1);
+					},
+					addItem: function (text) {
+						this.todoList.push({
+							text: text,
+							color: this.recentColor,
+							checked: false,
+							starred: false,
+							id: this.newId,
+						});
+						this.newId++;
+						this.$emit('update-id', this.newId);
+					},
+				},
+			};
+
+			let tabBar = {
+				props: ['colors'],
+				template: `
+    <div class="row">
+      <div class="col s12">
+        <ul class="tabs">
+          <li class="col s1"></li>
+          <li v-for="(color, index) in colors"
+              :class="[tabClass, index === activeTab ? 'active' : '']"
+              :id="index" @click="activate(index)">
+            <p :class="'color ' + color"></p>
+          </li>
+          <li :class="[tabClass, 'star', 5 === activeTab ? 'active' : '']"
+              :id="5" @click="activate(5)">
+            <p id="star">
+              <span class="lg-i material-icons sun">grade</span>
+            </p>
+          </li>
+          <li class="col s1"></li>
+        </ul>
+      </div>
+    </div>`,
+				data: function () {
+					return {
+						activeTab: 0,
+						tabClass: 'tab col s1 ',
+					};
+				},
+				methods: {
+					activate: function (i) {
+						this.activeTab = i;
+						let filter = i === 0 ? 'all' : i === 5 ? 'starred' : this.colors[i];
+						this.$emit('filter', filter);
+					},
+				},
+			};
+			let item = {
+				props: ['colors', 'data'],
+				template: `
+    <li style="position:relative;">
+      <div :class="['collapsible-header', this.data.color + '-bd']">
+        <span :class="['material-icons', 'check', this.data.color + '-txt']"
+              @click="onCheck">
+              {{ data.checked ? 'check_box' : 'check_box_outline_blank' }}
+        </span>
+        <p class="limit">
+          <span :class="['h-txt', this.data.color + '-txt']">
+            {{ data.text }}
+          </span>
+        </p>
+        <span class="material-icons right head-info dropdown-button"
+              :data-activates="menuId" @click="toggleActive">
+              more_vert
+        </span>
+        <span v-if="data.starred"
+              class="material-icons right sun-txt head-info">
+              grade
+        </span>
+        <item-menu :data-id="data.id" :active="active" :starred="data.starred" :colors="colors"
+                   @mouseleave="onMouseLeave" @new-color="onNewColor" 
+                   @color-change="onColorChange" @star-change="onStarChange" @remove="onRemove">
+        </item-menu>
+      </div>
+    </li>`,
+				data: function () {
+					return {
+						active: false,
+						menuId: 'menu' + this.data.id,
+					};
+				},
+				methods: {
+					onCheck: function () {
+						this.$emit('check');
+					},
+					onColorChange: function () {
+						this.$emit('color-change');
+					},
+					onMouseLeave: function () {
+						this.active = false;
+					},
+					onNewColor: function (color) {
+						this.$emit('new-color', color);
+					},
+					onStarChange: function () {
+						this.$emit('star-change');
+					},
+					onRemove: function () {
+						this.$emit('remove');
+					},
+					toggleActive: function () {
+						this.active = !this.active;
+					},
+				},
+			};
+			let itemMenu = {
+				props: ['active', 'colors', 'data-id', 'starred'],
+				template: `
+   <ul class="dropdown-content" :id="'menu'+dataId" :style="active ? activeStyle : '' " @mouseleave="onMouseLeave">
+    <li>
+      <p v-for="color in colors.slice(1)"
+         :class="['color-sm', color]" :id="color"
+         @click="onColorChange"></p>
+    </li>
+    <li class="h-txt sun-txt star-btn"
+        @click="onStarChange">{{ starred ? 'unstar' : 'star'}}</li>
+    <li class="h-txt rose-txt remove-btn"
+        @click="onRemove">remove</li>
+   </ul>`,
+				data: function () {
+					return {
+						activeStyle: {
+							width: '26.25px',
+							position: 'absolute',
+							top: '0',
+							right: '3em',
+							opacity: 1,
+							display: 'block',
+						},
+					};
+				},
+				methods: {
+					emitColor: function (e) {
+						this.$emit('new-color', e.target.id);
+					},
+					onColorChange: function (e) {
+						this.emitColor(e);
+						this.$emit('color-change');
+					},
+					onStarChange: function () {
+						this.$emit('star-change');
+					},
+					onMouseLeave: function () {
+						this.$emit('mouseleave');
+					},
+					onRemove: function () {
+						this.$emit('remove');
+					},
+				},
+			};
+
+			let addForm = {
+				template: `<p v-if="!showForm" class=" center new-todo limit">
+								<span class="material-icons" id="add"
+									@click="toggleForm">
+									add_circle_outline
+								</span>
+								</p>
+								<p v-else class="center new-todo limit">
+								<input type="text"  id="new-input" v-model="inputValue"
+									 @keyup.esc="toggleForm" @keyup.enter="handleAdd">
+								<button type="submit" class="btn"
+									  @click="handleAdd">Add</button>
+							</p>`,
+				data: function () {
+					return {
+						showForm: false,
+						inputValue: '',
+					};
+				},
+				methods: {
+					toggleForm: function () {
+						this.showForm = !this.showForm;
+					},
+					handleAdd: function () {
+						this.$emit('add-item', this.inputValue);
+						this.inputValue = '';
+						this.toggleForm();
+					},
+				},
+			};
+
+			let main = {
+				el: '#app',
+				data: {
+					storedId: storedId,
+					storedData: storedTodoList,
+				},
+				methods: {
+					updateId: function (id) {
+						window.localStorage.setItem(STORED_ID, id);
+					},
+					updateList: function (list) {
+						window.localStorage.setItem(STORED_LIST, JSON.stringify(list));
+					},
+				},
+			};
+
+			Vue.component('item-menu', itemMenu);
+			Vue.component('item', item);
+			Vue.component('tab-bar', tabBar);
+			Vue.component('add-form', addForm);
+			Vue.component('app', app);
+			new Vue(main);
+		</script>
+
+		<style>
+			* {
+				color: #726f70;
+			}
+			.all {
+				background-color: #726f70;
+			}
+
+			.ice {
+				background-color: #8adad6;
+			}
+			.ice-bd {
+				border-left: 3px solid #8adad6;
+			}
+			.ice-txt {
+				color: #8adad6;
+			}
+
+			.sun {
+				color: #ffd662; /* aspen gold */
+			}
+			.sun-bd {
+				border-left: 3px solid #ffd662;
+			}
+			.sun-txt,
+			li.sun-txt {
+				color: #ffd662;
+			}
+
+			.jewel {
+				background-color: #6e81be; /* persian jewel */
+			}
+			.jewel-bd {
+				border-left: 3px solid #6e81be;
+			}
+			.jewel-txt {
+				color: #6e81be;
+			}
+
+			.rose {
+				background-color: #f25f66; /* dubarry */
+			}
+			.rose-bd {
+				border-left: 3px solid #f25f66;
+			}
+			.rose-txt,
+			li.rose-txt {
+				color: #f25f66;
+			}
+
+			.tang {
+				background-color: #f88f58; /* tangerine */
+			}
+			.tang-bd {
+				border-left: 3px solid #f88f58;
+			}
+			.tang-txt {
+				color: #f88f58;
+			}
+
+			/*** elements ***/
+			iframe {
+				position: fixed;
+				bottom: 1em;
+				left: 1em;
+			}
+
+			li.active {
+				border-bottom: 2px solid rgba(114, 111, 112, 0.5);
+			}
+
+			/*** classes ***/
+			.check {
+				float: left;
+				margin-right: 1em;
+			}
+			.check,
+			.head-info {
+				line-height: 100%;
+				margin-top: 0.25em;
+				font-size: 1.75em;
+			}
+			.check,
+			.collapsible-header .color,
+			.lg-i {
+				vertical-align: middle;
+			}
+			.check,
+			.collapsible-header .color,
+			.color-sm,
+			.head-info,
+			.limit {
+				display: inline-block;
+			}
+
+			.collapsible-header .color {
+				width: 1.2em;
+				height: 1.2em;
+				margin: 0 1.5em 0 0;
+			}
+
+			.color {
+				width: 1.5em;
+				height: 1.5em;
+				border-radius: 100%;
+				margin: 1em auto;
+			}
+			.color,
+			.color-sm,
+			#add {
+				cursor: pointer;
+			}
+
+			.color-sm {
+				width: 1em;
+				height: 1em;
+				border-radius: 100%;
+				margin: 1px;
+				padding: 0;
+			}
+			.color-sm:hover {
+				box-shadow: 0px 2px 2px 1px rgba(114, 111, 112, 0.15);
+				transform: scale(1.1, 1.1);
+			}
+
+			.dropdown-content {
+				margin-top: -2.5em;
+			}
+			.dropdown-content li {
+				min-height: 0;
+				text-align: center;
+				line-height: 1em;
+				padding: 0.75em 0 0.5em 0;
+			}
+			.dropdown-content > li:hover {
+				background-color: #fff;
+			}
+			.dropdown-content li:nth-child(3) {
+				padding-bottom: 0.75em;
+			}
+
+			.h-txt {
+				font-size: 1.2em;
+				line-height: 2em;
+				cursor: text;
+			}
+
+			.head-info {
+				margin-left: 1em;
+			}
+
+			.hide {
+				display: none;
+			}
+
+			.lg-i {
+				font-size: 2em;
+			}
+
+			.limit {
+				margin: 0;
+				padding: 0;
+				max-width: 20em;
+			}
+
+			.new-todo {
+				display: block;
+				margin: 1em auto;
+			}
+
+			.row {
+				margin-bottom: 0;
+			}
+
+			/*** ids ***/
+			#add {
+				font-size: 2.25em;
+				color: rgba(114, 111, 112, 0.5);
+			}
+			#add:hover {
+				color: #726f70;
+			}
+
+			#new-input {
+				color: #726f70;
+				font-size: 1.2em;
+			}
+
+			#star {
+				margin: 0;
+			}
+		</style>
+	</body>
+</html>
