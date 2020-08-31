@@ -20,6 +20,7 @@
 			<input type="file" name="file_01" id="file_01" @change="file.fileValidation($event)" />
 			<img v-if="fileOption.fileSrc" :src="fileOption.fileSrc" alt="@" />
 		</div>
+		<Test></Test>
 	</div>
 </template>
 
@@ -28,12 +29,15 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import _ from 'lodash';
 
 import Landing from '@/components/Landing';
-import Mixin from '@/components/Mixin';
+import Test from '@/components/Test';
+
+import Mixin from '@/mixin/Mixin';
 
 // 컴퍼넌트 메서드 선언 가능
 @Component({
 	components: {
 		Landing,
+		Test,
 	},
 	filters: {
 		currency(value) {
@@ -111,7 +115,7 @@ export default class App extends Vue {
 
 		let { lodashData, operationData: opdata } = this;
 		const init = () => {
-			let _age = _.map(lodashData, obj => {
+			let _age = _.map(obj => {
 				return obj.age;
 			});
 			// 중복 제거
@@ -123,7 +127,6 @@ export default class App extends Vue {
 			});
 
 			let _f3 = _.filter(opdata.num, n => {
-				console.log('_f3', n);
 				return n % 2 == 0;
 			});
 			// 데이터 변형 발생
@@ -186,13 +189,19 @@ export default class App extends Vue {
 			}
 			this.fileOption.file = [_file];
 			this.fileOption.fileSrc = await getFileUrl(_file);
+
+			getFileUrl(_file).then(res => {
+				console.log('result', res);
+			});
 		};
 		const getFileUrl = file => {
 			return new Promise(resolve => {
 				let reader = new FileReader();
 				reader.onload = e => {
-					console.log('onload', e);
 					resolve(e.target.result);
+					const blob = new Blob([e.target.result], { type: file.type });
+					const url = URL.createObjectURL(blob);
+					console.log('???', blob, url, 'file', file);
 				};
 				reader.readAsDataURL(file);
 			});
@@ -204,6 +213,7 @@ export default class App extends Vue {
 
 		return {
 			fileValidation,
+			exec,
 		};
 	}
 	get file() {
@@ -216,6 +226,7 @@ export default class App extends Vue {
 		//console.log('mounted', this);
 		const l = this._lodashOperation();
 		l.init();
+		this.file.exec();
 	}
 }
 </script>

@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit, Mixins } from 'vue-property-decorator';
-import Mixin from '@/components/Mixin';
+import Mixin from '@/mixin/Mixin';
 @Component
 export default class HelloWorld extends Mixins(Mixin) {
 	@Prop() private msg!: string;
