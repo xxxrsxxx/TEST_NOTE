@@ -199,6 +199,7 @@ export default class App extends Vue {
 				let reader = new FileReader();
 				reader.onload = e => {
 					resolve(e.target.result);
+					//https://heropy.blog/2019/02/28/blob/ 이미지 조각내기
 					const blob = new Blob([e.target.result], { type: file.type });
 					const url = URL.createObjectURL(blob);
 					console.log('???', blob, url, 'file', file);
