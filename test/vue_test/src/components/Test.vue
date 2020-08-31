@@ -35,6 +35,7 @@ export default class Test extends Vue {
 			],
 			elClick: false,
 			group: { exec: false, data: [] },
+			select: [],
 		};
 	}
 	calculate() {
@@ -45,18 +46,18 @@ export default class Test extends Vue {
 		console.log('_t', this.copy);
 	}
 	catchEvent(e) {
-		console.log('catchEvent', e);
+		this.select.push(e);
+		console.log('catchEvent', e[0], this.select);
 	}
 	dispatch() {
 		let te = _.map(this.list, obj => {
 			return obj.value;
 		});
-		let o = (this.elClick = this.elClick == false ? true : false);
+		let o = (this.elClickelClick = this.elClick == false ? true : false);
 		this.group = {};
 		this.group.exec = o;
 		this.group.data = te;
 	}
-
 	mounted() {
 		let calc = this.calculate();
 	}

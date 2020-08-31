@@ -4,7 +4,8 @@
 		<button @click="childEmit">Child Button</button>
 		<slot name="type1"></slot>
 		<slot name="type2"></slot>
-		<slot name="type3" :content="string" :fnc="childSlotFnc"></slot>
+		<slot name="type3" :string="string" :fnc="childSlotFnc"></slot>
+		<slot :string="string"> </slot>
 	</div>
 </template>
 

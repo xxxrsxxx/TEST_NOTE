@@ -8,8 +8,12 @@
 				<p>payload type2 slot</p>
 			</template>
 			<template v-slot:type3="props">
-				<p>{{ props }}</p>
+				<p>type3 {{ props }}</p>
 				<button @click="props.fnc()">SlotProps Button</button>
+			</template>
+			<template slot-scope="props">
+				<p>slot-scope</p>
+				{{ props }}
 			</template>
 		</Landing>
 		<div class="container">
