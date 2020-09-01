@@ -9,6 +9,7 @@
 				@$emit="catchEvent"
 			>
 			</TestList>
+			<p @click="deleteFnc">select delete</p>
 		</div>
 	</div>
 </template>
@@ -43,17 +44,27 @@ export default class Test extends Vue {
 		let _t = _.keys(obj).forEach(x => {
 			this.copy[`${x}`] = obj[`${x}`];
 		});
-		console.log('_t', this.copy);
 	}
 	catchEvent(e) {
-		this.select.push(e);
-		console.log('catchEvent', e[0], this.select);
+		let t = this.select.indexOf(e[0]);
+		if (t == -1 && e[0]) this.select.push(e[0]);
 	}
+	deleteFnc() {
+		if (this.select.length == 0) return;
+		let pos = this.list.map(e => {
+			return e.value;
+		});
+		this.select.forEach(e => {
+			let index = pos.indexOf(e);
+			this.list.splice(index, 1);
+		});
+	}
+
 	dispatch() {
 		let te = _.map(this.list, obj => {
 			return obj.value;
 		});
-		let o = (this.elClickelClick = this.elClick == false ? true : false);
+		let o = (this.elClick = this.elClick == false ? true : false);
 		this.group = {};
 		this.group.exec = o;
 		this.group.data = te;

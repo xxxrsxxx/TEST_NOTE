@@ -156,6 +156,8 @@ export default class App extends Vue {
 			let find = _.find(opdata.dummy, o => {
 				return o.rank > 1;
 			});
+			let chunk = _.chunk(opdata.dummy, 2);
+
 			console.log(
 				'_t',
 				_age,
@@ -175,6 +177,8 @@ export default class App extends Vue {
 				idxOf,
 				'\nfind',
 				find,
+				'\nchunk',
+				chunk,
 			);
 		};
 		return {
