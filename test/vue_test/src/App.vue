@@ -16,7 +16,7 @@
 				{{ props }}
 			</template>
 		</Landing>
-		<div class="container">
+		<div>
 			<p>{{ _msgFnc }}</p>
 			<p>{{ 2000 | currency }}</p>
 			<button @click="testController">testController Button</button>
@@ -25,6 +25,8 @@
 			<img v-if="fileOption.fileSrc" :src="fileOption.fileSrc" alt="@" />
 		</div>
 		<Test></Test>
+		<TestObject></TestObject>
+		<FilterLogic></FilterLogic>
 	</div>
 </template>
 
@@ -34,6 +36,8 @@ import _ from 'lodash';
 
 import Landing from '@/components/Landing';
 import Test from '@/components/Test';
+import TestObject from '@/components/TestObject';
+import FilterLogic from '@/components/FilterLogic';
 
 import Mixin from '@/mixin/Mixin';
 
@@ -42,6 +46,8 @@ import Mixin from '@/mixin/Mixin';
 	components: {
 		Landing,
 		Test,
+		TestObject,
+		FilterLogic,
 	},
 	filters: {
 		currency(value) {

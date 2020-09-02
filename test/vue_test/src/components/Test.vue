@@ -41,9 +41,11 @@ export default class Test extends Vue {
 	}
 	calculate() {
 		const { obj } = this;
-		let _t = _.keys(obj).forEach(x => {
+		_.keys(obj).forEach(x => {
+			console.log('keys', x);
 			this.copy[`${x}`] = obj[`${x}`];
 		});
+		console.log('copy', this.copy);
 	}
 	catchEvent(e) {
 		let t = this.select.indexOf(e[0]);
