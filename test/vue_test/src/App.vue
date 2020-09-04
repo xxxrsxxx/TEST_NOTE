@@ -191,7 +191,9 @@ export default class App extends Vue {
 			init,
 		};
 	}
-
+	get file() {
+		return this._file();
+	}
 	_file() {
 		const fileValidation = async event => {
 			let { file: OptFile, fileSrc: optFileSrc, maxFileSize } = this.fileOption;
@@ -231,9 +233,38 @@ export default class App extends Vue {
 			exec,
 		};
 	}
-	get file() {
-		return this._file();
+	note() {
+		interface config {
+			_id: number;
+			key?: number;
+			value: any;
+			str: string;
+			readonly page: number;
+		}
+		const init = (o: config) => {
+			console.log('note', o);
+		};
+
+		let _obj = {
+			_id: 10,
+			value: 100,
+			str: 'string',
+			page: 1,
+		};
+
+		init(_obj);
+
+		interface Func {
+			(source: string, subString: string): boolean;
+		}
+		let init2: Func;
+		init2 = (source: string, subString: string) => {
+			let result = source == subString ? true : false;
+			return result;
+		};
+		console.log('note my', init2('hello', 'hello'));
 	}
+
 	mounted() {
 		const anchor = document.querySelector('.container');
 		this.checkVoid();
@@ -242,6 +273,7 @@ export default class App extends Vue {
 		const l = this._lodashOperation();
 		l.init();
 		this.file.exec();
+		this.note();
 	}
 }
 </script>
