@@ -1,14 +1,15 @@
 <template>
 	<div>
-		<label for="data._id">label {{ this.data._id }}</label>
+		<label :for="data._id">label {{ this.data._id }}</label>
 		<input
 			v-model="opt.checked"
 			type="checkbox"
 			name="data._id"
-			id="data._id"
+			:id="data._id"
 			:value="data.value"
 		/>
 		{{ data }}
+		<button @click="closeHandler">delete</button>
 	</div>
 </template>
 
@@ -19,8 +20,10 @@ import _ from 'lodash';
 export default class Test extends Vue {
 	@Prop({ type: Object, default: () => [] })
 	data!: object;
-
-	@Prop() all!: object;
+	@Prop({ type: Number })
+	index: number;
+	@Prop()
+	group!: object;
 
 	data() {
 		return {
@@ -36,10 +39,10 @@ export default class Test extends Vue {
 		childEmit();
 	}
 
-	@Watch('all')
+	@Watch('group')
 	groupHandler() {
-		if (this.all.exec) {
-			const _t = _.filter(this.all.data, v => {
+		if (this.group.exec) {
+			const _t = _.filter(this.group.data, v => {
 				return v === this.data.value;
 			});
 			this.opt.checked.push(_t[0]);
@@ -48,9 +51,19 @@ export default class Test extends Vue {
 		}
 	}
 
-	@Emit('$emit')
+	@Emit('check')
 	childEmit() {
-		return this.opt.checked;
+		return {
+			key: this.data._id,
+			value: this.opt.checked[0],
+			checked: this.opt.checked.length == 0 ? false : true,
+		};
+	}
+	@Emit('close')
+	closeHandler() {
+		return {
+			key: this.index,
+		};
 	}
 
 	mounted() {}

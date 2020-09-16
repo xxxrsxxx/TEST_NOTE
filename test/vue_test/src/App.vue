@@ -27,6 +27,7 @@
 		<Test></Test>
 		<TestObject></TestObject>
 		<FilterLogic></FilterLogic>
+		<TestQuantity></TestQuantity>
 	</div>
 </template>
 
@@ -38,6 +39,7 @@ import Landing from '@/components/Landing';
 import Test from '@/components/Test';
 import TestObject from '@/components/TestObject';
 import FilterLogic from '@/components/FilterLogic';
+import TestQuantity from '@/components/TestQuantity';
 
 import Mixin from '@/mixin/Mixin';
 
@@ -47,6 +49,7 @@ import Mixin from '@/mixin/Mixin';
 		Landing,
 		Test,
 		TestObject,
+		TestQuantity,
 		FilterLogic,
 	},
 	filters: {
@@ -234,6 +237,15 @@ export default class App extends Vue {
 		};
 	}
 	note() {
+		let values: string[];
+		values = ['test1'];
+		(values ?? (values = [])).push('test2'); // values null or undefined
+
+		let _type = 'string';
+		let _or = _type || [];
+
+		console.log('_type', _or);
+
 		interface config {
 			_id: number;
 			key?: number;
