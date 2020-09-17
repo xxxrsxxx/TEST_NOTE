@@ -275,6 +275,18 @@ export default class App extends Vue {
 			return result;
 		};
 		console.log('note my', init2('hello', 'hello'));
+
+		interface item {
+			id: number;
+			name: string;
+		}
+		let _item: item = {
+			id: 1,
+			name: 'test',
+		};
+		let _exp: item[] | [] = []; // union 두개 이상 타입 가질때 | 선언
+		_exp = [{ id: 0, name: 'test0' }];
+		console.log('exp-------', _exp, _item);
 	}
 
 	mounted() {
