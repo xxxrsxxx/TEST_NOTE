@@ -4,8 +4,8 @@
 			<template v-slot:type1>
 				<p>payload type1 slot</p>
 			</template>
-			<template #type2>
-				<p>payload type2 slot</p>
+			<template #type2="props">
+				<p>payload type2 slot{{ props }}</p>
 			</template>
 			<template v-slot:type3="props">
 				<p>type3 {{ props }}</p>
@@ -167,28 +167,28 @@ export default class App extends Vue {
 			});
 			let chunk = _.chunk(opdata.dummy, 2);
 
-			console.log(
-				'_t',
-				_age,
-				_x,
-				_f1,
-				'_f2',
-				_f2,
-				'f3',
-				_f3,
-				'\n_rm',
-				_rm,
-				'\n_max',
-				_max,
-				'\nchain',
-				chain,
-				'\nidxOf',
-				idxOf,
-				'\nfind',
-				find,
-				'\nchunk',
-				chunk,
-			);
+			// console.log(
+			// 	'_t',
+			// 	_age,
+			// 	_x,
+			// 	_f1,
+			// 	'_f2',
+			// 	_f2,
+			// 	'f3',
+			// 	_f3,
+			// 	'\n_rm',
+			// 	_rm,
+			// 	'\n_max',
+			// 	_max,
+			// 	'\nchain',
+			// 	chain,
+			// 	'\nidxOf',
+			// 	idxOf,
+			// 	'\nfind',
+			// 	find,
+			// 	'\nchunk',
+			// 	chunk,
+			// );
 		};
 		return {
 			init,
@@ -244,7 +244,7 @@ export default class App extends Vue {
 		let _type = 'string';
 		let _or = _type || [];
 
-		console.log('_type', _or);
+		//console.log('_type', _or);
 
 		interface config {
 			_id: number;
@@ -274,7 +274,7 @@ export default class App extends Vue {
 			let result = source == subString ? true : false;
 			return result;
 		};
-		console.log('note my', init2('hello', 'hello'));
+		//console.log('note my', init2('hello', 'hello'));
 
 		interface item {
 			id: number;
@@ -286,9 +286,16 @@ export default class App extends Vue {
 		};
 		let _exp: item[] | [] = []; // union 두개 이상 타입 가질때 | 선언
 		_exp = [{ id: 0, name: 'test0' }];
-		console.log('exp-------', _exp, _item);
+		//console.log('exp-------', _exp, _item);
 	}
-
+	get computedTest() {
+		console.log('before computed');
+		return o => {
+			const _array = [1, 2, 3, 4, 5];
+			const even = element => element % 2 === 0;
+			let _some = _array.some(even);
+		};
+	}
 	mounted() {
 		const anchor = document.querySelector('.container');
 		this.checkVoid();
@@ -298,6 +305,7 @@ export default class App extends Vue {
 		l.init();
 		this.file.exec();
 		this.note();
+		this.computedTest([{ key: 1, value: 'computed' }]);
 	}
 }
 </script>

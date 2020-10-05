@@ -3,7 +3,7 @@
 		<h1>{{ msg }}</h1>
 		<button @click="childEmit">Child Button</button>
 		<slot name="type1"></slot>
-		<slot name="type2"></slot>
+		<slot name="type2" :string="string"></slot>
 		<slot name="type3" :string="string" :fnc="childSlotFnc"></slot>
 		<slot :string="string"> </slot>
 	</div>
@@ -23,6 +23,9 @@ export default class HelloWorld extends Mixins(Mixin) {
 				first: 'first',
 				last: 'last',
 			},
+			testObj: {
+				value: false,
+			},
 		};
 	}
 	@Emit('$emit')
@@ -33,8 +36,16 @@ export default class HelloWorld extends Mixins(Mixin) {
 	childSlotFnc() {
 		//console.log('childSlotFnc');
 	}
+
+	get reFormat() {
+		return this.testObj;
+	}
+
 	mounted() {
 		//console.log('child', this);
+		const t = this.reFormat;
+		t.value = true;
+		console.log('testObj', t, this.testObj);
 	}
 }
 </script>
