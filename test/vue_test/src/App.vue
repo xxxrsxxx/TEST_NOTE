@@ -25,6 +25,7 @@
 			<img v-if="fileOption.fileSrc" :src="fileOption.fileSrc" alt="@" />
 		</div>
 		<Test></Test>
+		<TestValidate></TestValidate>
 		<TestObject></TestObject>
 		<FilterLogic></FilterLogic>
 		<TestQuantity></TestQuantity>
@@ -37,6 +38,7 @@ import _ from 'lodash';
 
 import Landing from '@/components/Landing';
 import Test from '@/components/Test';
+import TestValidate from '@/components/TestValidate';
 import TestObject from '@/components/TestObject';
 import FilterLogic from '@/components/FilterLogic';
 import TestQuantity from '@/components/TestQuantity';
@@ -48,6 +50,7 @@ import Mixin from '@/mixin/Mixin';
 	components: {
 		Landing,
 		Test,
+		TestValidate,
 		TestObject,
 		TestQuantity,
 		FilterLogic,
