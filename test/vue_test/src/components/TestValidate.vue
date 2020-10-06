@@ -42,7 +42,7 @@ export default class TestValidate extends Vue {
 	calculate() {
 		let isActive = this.values.filter(x => x.isActive);
 		let child = this.values
-			.filter(x => x.child)
+			.filter(x => x.isChild)
 			.map(x => x.child)
 			.flat();
 		let array = this.values.concat(child);
