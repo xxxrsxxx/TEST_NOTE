@@ -291,6 +291,44 @@ export default class App extends Vue {
 		_exp = [{ id: 0, name: 'test0' }];
 		//console.log('exp-------', _exp, _item);
 	}
+	ex_prog() {
+		function solution(n) {
+			let cnt = 0;
+			let tmp = [];
+			let list = [];
+			let result = [];
+			tmp.push(4, 13);
+			while (true) {
+				if (cnt > n) {
+					break;
+				}
+				let num = tmp.splice(0, 1);
+				tmp.push(num + '4');
+				tmp.push(num + '13');
+				list.push(num);
+				result = list.flat();
+				cnt++;
+			}
+			result.sort(function (a, b) {
+				return a - b;
+			});
+			return Number(result[n - 1]);
+		}
+		//ex) S = {4, 13, 44, 134, 413, 444, 1313......}
+		function solution(num) {
+			let answer = [];
+			for (let i = 0; i < num; i++) {
+				let str = '' + (i + 1);
+				for (let j = 0; j < str.length; j++) {
+					if (str[j] == 3 || str[j] == 6 || str[j] == 9) {
+						str = '짝';
+					}
+				}
+				if (str === '짝') answer.push(str);
+			}
+			return answer.length;
+		}
+	}
 	get computedTest() {
 		console.log('before computed');
 		return o => {
