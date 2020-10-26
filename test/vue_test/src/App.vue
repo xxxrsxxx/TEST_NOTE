@@ -314,20 +314,21 @@ export default class App extends Vue {
 			});
 			return Number(result[n - 1]);
 		}
+		solution(7);
 		//ex) S = {4, 13, 44, 134, 413, 444, 1313......}
-		function solution(num) {
-			let answer = [];
-			for (let i = 0; i < num; i++) {
-				let str = '' + (i + 1);
-				for (let j = 0; j < str.length; j++) {
-					if (str[j] == 3 || str[j] == 6 || str[j] == 9) {
-						str = '짝';
-					}
-				}
-				if (str === '짝') answer.push(str);
-			}
-			return answer.length;
-		}
+		// function solution(num) {
+		// 	let answer = [];
+		// 	for (let i = 0; i < num; i++) {
+		// 		let str = '' + (i + 1);
+		// 		for (let j = 0; j < str.length; j++) {
+		// 			if (str[j] == 3 || str[j] == 6 || str[j] == 9) {
+		// 				str = '짝';
+		// 			}
+		// 		}
+		// 		if (str === '짝') answer.push(str);
+		// 	}
+		// 	return answer.length;
+		// }
 	}
 	get computedTest() {
 		console.log('before computed');
@@ -347,6 +348,7 @@ export default class App extends Vue {
 		this.file.exec();
 		this.note();
 		this.computedTest([{ key: 1, value: 'computed' }]);
+		this.ex_prog();
 	}
 }
 </script>
