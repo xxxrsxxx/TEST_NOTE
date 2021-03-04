@@ -26,9 +26,15 @@ class _reg {
 			'https://youtu.be/-ZClicWm0zM\n' +
 			'youtu.be/-ZClicWm0zM';
 
+		let url = 'http://xxx.domain.com?test';
+
 		const regYtId = /(?:https?:\/\/)?(?:www\.)?youtu.be\/([a-zA-Z0-9-]{11})/gm;
+		const regParams = /(?:com\?)[a-z]+/gm;
 		const confirm = _string.match(regYtId);
+		const confirm2 = url.match(regParams);
+
 		console.log('========', confirm);
+		console.log('========', confirm2);
 	};
 }
 
