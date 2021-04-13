@@ -99,9 +99,15 @@
 				 **/
 				const setScreenType = () => {
 					const { anchor, screen } = config;
-					const w = window.innerWidth,
-						screenType = w < 768 ? 1 : w < 960 ? 2 : 3,
-						string = `screenType${screenType}`;
+					const mobileReg = /Mobile|iP(hone|od|ad)|And roid|IEMobile/;
+
+					let w = window.innerWidth;
+					if (window.navigator.userAgent.match(mobileReg)) w = window.screen.width;
+
+					const screenType = w < 768 ? 1 : w < 960 ? 2 : 3;
+					const string = `screenType${screenType}`;
+
+					console.log('wwwwww', w);
 					// anchor classList 일치 하지 않을 경우
 					if (!anchor.html.classList.contains(string)) {
 						//array method includes 같은 원리

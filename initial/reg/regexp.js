@@ -38,6 +38,7 @@ class _reg {
 		const regParams = /(?:com\?)([a-z]+)/gm;
 		const stringCatch = /(gr[aeo]y)|(gra?y)/gm;
 		const phoneNumCatch = /\d{2,3}[-.]\d{3}[-.]\d{4}/gm;
+		const selectDotNum = /(\d+(?!\.))/;
 
 		const confirm = _string.match(regYtId);
 		const confirm2 = _string.match(regParams);
